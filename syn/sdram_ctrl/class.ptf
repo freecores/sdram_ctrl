@@ -1,0 +1,972 @@
+#
+# This class.ptf file built by Component Editor
+# 2006.09.25.10:24:12
+#
+# DO NOT MODIFY THIS FILE
+# If you hand-modify this file you will likely
+# interfere with Component Editor's ability to
+# read and edit it. And then Component Editor
+# will overwrite your changes anyway. So, for
+# the very best results, just relax and
+# DO NOT MODIFY THIS FILE
+#
+CLASS sdram_ctrl
+{
+   CB_GENERATOR 
+   {
+      HDL_FILES 
+      {
+         FILE 
+         {
+            use_in_simulation = "1";
+            use_in_synthesis = "1";
+            filepath = "hdl/sdram_ctrl.vhd";
+         }
+      }
+      top_module_name = "sdram_ctrl.vhd:sdram_ctrl";
+      emit_system_h = "0";
+      LIBRARIES 
+      {
+         library = "ieee.std_logic_1164.all";
+         library = "ieee.numeric_std.all";
+         library = "altera_mf.altera_mf_components.all";
+         library = "std.standard.all";
+      }
+   }
+   MODULE_DEFAULTS global_signals
+   {
+      class = "sdram_ctrl";
+      class_version = "1.1";
+      SYSTEM_BUILDER_INFO 
+      {
+         Instantiate_In_System_Module = "1";
+         Has_Clock = "1";
+         Top_Level_Ports_Are_Enumerated = "1";
+      }
+      COMPONENT_BUILDER 
+      {
+         GLS_SETTINGS 
+         {
+         }
+      }
+      PORT_WIRING 
+      {
+         PORT clk
+         {
+            width = "1";
+            width_expression = "";
+            direction = "input";
+            type = "clk";
+            is_shared = "0";
+            vhdl_record_name = "";
+            vhdl_record_type = "";
+         }
+         PORT reset
+         {
+            width = "1";
+            width_expression = "";
+            direction = "input";
+            type = "reset";
+            is_shared = "0";
+            vhdl_record_name = "";
+            vhdl_record_type = "";
+         }
+         PORT sdram_cke
+         {
+            width = "1";
+            width_expression = "";
+            direction = "output";
+            type = "export";
+            is_shared = "0";
+            vhdl_record_name = "";
+            vhdl_record_type = "";
+         }
+         PORT sdram_ba
+         {
+            width = "-1";
+            width_expression = "((bank_width - 1)) - (0) + 1";
+            direction = "output";
+            type = "export";
+            is_shared = "0";
+            vhdl_record_name = "";
+            vhdl_record_type = "";
+         }
+         PORT sdram_addr
+         {
+            width = "-1";
+            width_expression = "((row_width - 1)) - (0) + 1";
+            direction = "output";
+            type = "export";
+            is_shared = "0";
+            vhdl_record_name = "";
+            vhdl_record_type = "";
+         }
+         PORT sdram_cs_n
+         {
+            width = "1";
+            width_expression = "";
+            direction = "output";
+            type = "export";
+            is_shared = "0";
+            vhdl_record_name = "";
+            vhdl_record_type = "";
+         }
+         PORT sdram_ras_n
+         {
+            width = "1";
+            width_expression = "";
+            direction = "output";
+            type = "export";
+            is_shared = "0";
+            vhdl_record_name = "";
+            vhdl_record_type = "";
+         }
+         PORT sdram_cas_n
+         {
+            width = "1";
+            width_expression = "";
+            direction = "output";
+            type = "export";
+            is_shared = "0";
+            vhdl_record_name = "";
+            vhdl_record_type = "";
+         }
+         PORT sdram_we_n
+         {
+            width = "1";
+            width_expression = "";
+            direction = "output";
+            type = "export";
+            is_shared = "0";
+            vhdl_record_name = "";
+            vhdl_record_type = "";
+         }
+         PORT sdram_dq
+         {
+            width = "-1";
+            width_expression = "((data_width - 1)) - (0) + 1";
+            direction = "inout";
+            type = "export";
+            is_shared = "0";
+            vhdl_record_name = "";
+            vhdl_record_type = "";
+         }
+         PORT sdram_dqm
+         {
+            width = "-1";
+            width_expression = "(((data_width / 8) - 1)) - (0) + 1";
+            direction = "output";
+            type = "export";
+            is_shared = "0";
+            vhdl_record_name = "";
+            vhdl_record_type = "";
+         }
+      }
+      WIZARD_SCRIPT_ARGUMENTS 
+      {
+         hdl_parameters 
+         {
+            data_width = "32";
+            bank_width = "4";
+            row_width = "12";
+            column_width = "8";
+            clk_mhz = "120";
+         }
+      }
+      SIMULATION 
+      {
+         DISPLAY 
+         {
+         }
+      }
+      SLAVE nios
+      {
+         SYSTEM_BUILDER_INFO 
+         {
+            Bus_Type = "avalon";
+            Address_Group = "1";
+            Has_Clock = "0";
+            Address_Width = "-1";
+            Address_Alignment = "dynamic";
+            Data_Width = "8";
+            Has_Base_Address = "1";
+            Has_IRQ = "0";
+            Setup_Time = "0";
+            Hold_Time = "0";
+            Read_Wait_States = "peripheral_controlled";
+            Write_Wait_States = "peripheral_controlled";
+            Read_Latency = "0";
+            Maximum_Pending_Read_Transactions = "9";
+            Active_CS_Through_Read_Latency = "0";
+            Is_Printable_Device = "1";
+            Is_Memory_Device = "1";
+            Is_Readable = "1";
+            Is_Writable = "1";
+            Minimum_Uninterrupted_Run_Length = "1";
+         }
+         COMPONENT_BUILDER 
+         {
+            AVS_SETTINGS 
+            {
+               Setup_Value = "0";
+               Read_Wait_Value = "1";
+               Write_Wait_Value = "1";
+               Hold_Value = "0";
+               Timing_Units = "cycles";
+               Read_Latency_Value = "0";
+               Minimum_Arbitration_Shares = "1";
+               Active_CS_Through_Read_Latency = "0";
+               Max_Pending_Read_Transactions_Value = "9";
+               Address_Alignment = "dynamic";
+               Is_Printable_Device = "1";
+               interface_name = "Avalon Slave";
+               external_wait = "1";
+               Is_Memory_Device = "1";
+            }
+         }
+         PORT_WIRING 
+         {
+            PORT avs_nios_chipselect
+            {
+               width = "1";
+               width_expression = "";
+               direction = "input";
+               type = "chipselect";
+               is_shared = "0";
+               vhdl_record_name = "";
+               vhdl_record_type = "";
+            }
+            PORT avs_nios_address
+            {
+               width = "-1";
+               width_expression = "((((bank_width + row_width) + column_width) - 1)) - (0) + 1";
+               direction = "input";
+               type = "address";
+               is_shared = "0";
+               vhdl_record_name = "";
+               vhdl_record_type = "";
+            }
+            PORT avs_nios_byteenable
+            {
+               width = "-1";
+               width_expression = "(((data_width / 8) - 1)) - (0) + 1";
+               direction = "input";
+               type = "byteenable";
+               is_shared = "0";
+               vhdl_record_name = "";
+               vhdl_record_type = "";
+            }
+            PORT avs_nios_writedata
+            {
+               width = "-1";
+               width_expression = "((data_width - 1)) - (0) + 1";
+               direction = "input";
+               type = "writedata";
+               is_shared = "0";
+               vhdl_record_name = "";
+               vhdl_record_type = "";
+            }
+            PORT avs_nios_write
+            {
+               width = "1";
+               width_expression = "";
+               direction = "input";
+               type = "write";
+               is_shared = "0";
+               vhdl_record_name = "";
+               vhdl_record_type = "";
+            }
+            PORT avs_nios_read
+            {
+               width = "1";
+               width_expression = "";
+               direction = "input";
+               type = "read";
+               is_shared = "0";
+               vhdl_record_name = "";
+               vhdl_record_type = "";
+            }
+            PORT avs_nios_waitrequest
+            {
+               width = "1";
+               width_expression = "";
+               direction = "output";
+               type = "waitrequest";
+               is_shared = "0";
+               vhdl_record_name = "";
+               vhdl_record_type = "";
+            }
+            PORT avs_nios_readdata
+            {
+               width = "-1";
+               width_expression = "((data_width - 1)) - (0) + 1";
+               direction = "output";
+               type = "readdata";
+               is_shared = "0";
+               vhdl_record_name = "";
+               vhdl_record_type = "";
+            }
+            PORT avs_nios_readdatavalid
+            {
+               width = "1";
+               width_expression = "";
+               direction = "output";
+               type = "readdatavalid";
+               is_shared = "0";
+               vhdl_record_name = "";
+               vhdl_record_type = "";
+            }
+         }
+      }
+   }
+   USER_INTERFACE 
+   {
+      USER_LABELS 
+      {
+         name = "sdram_ctrl";
+         technology = "Opencores";
+      }
+      WIZARD_UI the_wizard_ui
+      {
+         title = "sdram_ctrl - {{ $MOD }}";
+         CONTEXT 
+         {
+            H = "WIZARD_SCRIPT_ARGUMENTS/hdl_parameters";
+            M = "";
+            SBI_global_signals = "SYSTEM_BUILDER_INFO";
+            SBI_nios = "SLAVE nios/SYSTEM_BUILDER_INFO";
+            # The following signals have parameterized widths:
+            PORT_sdram_ba = "PORT_WIRING/PORT sdram_ba";
+            PORT_sdram_addr = "PORT_WIRING/PORT sdram_addr";
+            PORT_sdram_dq = "PORT_WIRING/PORT sdram_dq";
+            PORT_sdram_dqm = "PORT_WIRING/PORT sdram_dqm";
+            PORT_avs_nios_address = "SLAVE nios/PORT_WIRING/PORT avs_nios_address";
+            PORT_avs_nios_byteenable = "SLAVE nios/PORT_WIRING/PORT avs_nios_byteenable";
+            PORT_avs_nios_writedata = "SLAVE nios/PORT_WIRING/PORT avs_nios_writedata";
+            PORT_avs_nios_readdata = "SLAVE nios/PORT_WIRING/PORT avs_nios_readdata";
+         }
+         PAGES main
+         {
+            PAGE 1
+            {
+               align = "left";
+               title = "<b>sdram_ctrl 1.1</b> Settings";
+               layout = "vertical";
+               TEXT 
+               {
+                  title = "Built on: 2006.09.25.10:24:12";
+               }
+               TEXT 
+               {
+                  title = "Class name: sdram_ctrl";
+               }
+               TEXT 
+               {
+                  title = "Class version: 1.1";
+               }
+               TEXT 
+               {
+                  title = "Component name: sdram_ctrl";
+               }
+               TEXT 
+               {
+                  title = "Component Group: Opencores";
+               }
+               GROUP parameters
+               {
+                  title = "Parameters";
+                  layout = "form";
+                  align = "left";
+                  EDIT e1
+                  {
+                     id = "data_width";
+                     editable = "1";
+                     title = "data_width:";
+                     columns = "40";
+                     tooltip = "default value: 32";
+                     DATA 
+                     {
+                        $H/data_width = "$";
+                     }
+                     q = "'";
+                     warning = "{{ if(!(regexp('ugly_'+$H/data_width,'ugly_[0-9]*'+$q+'[bB][01][_01]*')||regexp('ugly_'+$H/data_width,'ugly_[0-9]*'+$q+'[hH][0-9a-fA-F][_0-9a-fA-F]*')||regexp('ugly_'+$H/data_width,'ugly_[0-9]*'+$q+'[oO][0-7][_0-7]*')||regexp('ugly_'+$H/data_width,'ugly_0x[0-9a-fA-F]+')||regexp('ugly_'+$H/data_width,'ugly_-?[0-9]+')))'data_width must be numeric constant, not '+$H/data_width; }}";
+                  }
+                  EDIT e2
+                  {
+                     id = "bank_width";
+                     editable = "1";
+                     title = "bank_width:";
+                     columns = "40";
+                     tooltip = "default value: 4";
+                     DATA 
+                     {
+                        $H/bank_width = "$";
+                     }
+                     q = "'";
+                     warning = "{{ if(!(regexp('ugly_'+$H/bank_width,'ugly_[0-9]*'+$q+'[bB][01][_01]*')||regexp('ugly_'+$H/bank_width,'ugly_[0-9]*'+$q+'[hH][0-9a-fA-F][_0-9a-fA-F]*')||regexp('ugly_'+$H/bank_width,'ugly_[0-9]*'+$q+'[oO][0-7][_0-7]*')||regexp('ugly_'+$H/bank_width,'ugly_0x[0-9a-fA-F]+')||regexp('ugly_'+$H/bank_width,'ugly_-?[0-9]+')))'bank_width must be numeric constant, not '+$H/bank_width; }}";
+                  }
+                  EDIT e3
+                  {
+                     id = "row_width";
+                     editable = "1";
+                     title = "row_width:";
+                     columns = "40";
+                     tooltip = "default value: 12";
+                     DATA 
+                     {
+                        $H/row_width = "$";
+                     }
+                     q = "'";
+                     warning = "{{ if(!(regexp('ugly_'+$H/row_width,'ugly_[0-9]*'+$q+'[bB][01][_01]*')||regexp('ugly_'+$H/row_width,'ugly_[0-9]*'+$q+'[hH][0-9a-fA-F][_0-9a-fA-F]*')||regexp('ugly_'+$H/row_width,'ugly_[0-9]*'+$q+'[oO][0-7][_0-7]*')||regexp('ugly_'+$H/row_width,'ugly_0x[0-9a-fA-F]+')||regexp('ugly_'+$H/row_width,'ugly_-?[0-9]+')))'row_width must be numeric constant, not '+$H/row_width; }}";
+                  }
+                  EDIT e4
+                  {
+                     id = "column_width";
+                     editable = "1";
+                     title = "column_width:";
+                     columns = "40";
+                     tooltip = "default value: 8";
+                     DATA 
+                     {
+                        $H/column_width = "$";
+                     }
+                     q = "'";
+                     warning = "{{ if(!(regexp('ugly_'+$H/column_width,'ugly_[0-9]*'+$q+'[bB][01][_01]*')||regexp('ugly_'+$H/column_width,'ugly_[0-9]*'+$q+'[hH][0-9a-fA-F][_0-9a-fA-F]*')||regexp('ugly_'+$H/column_width,'ugly_[0-9]*'+$q+'[oO][0-7][_0-7]*')||regexp('ugly_'+$H/column_width,'ugly_0x[0-9a-fA-F]+')||regexp('ugly_'+$H/column_width,'ugly_-?[0-9]+')))'column_width must be numeric constant, not '+$H/column_width; }}";
+                  }
+                  EDIT e5
+                  {
+                     id = "clk_mhz";
+                     editable = "1";
+                     title = "clk_mhz:";
+                     columns = "40";
+                     tooltip = "default value: 120";
+                     DATA 
+                     {
+                        $H/clk_mhz = "$";
+                     }
+                     q = "'";
+                     warning = "{{ if(!(regexp('ugly_'+$H/clk_mhz,'ugly_[0-9]*'+$q+'[bB][01][_01]*')||regexp('ugly_'+$H/clk_mhz,'ugly_[0-9]*'+$q+'[hH][0-9a-fA-F][_0-9a-fA-F]*')||regexp('ugly_'+$H/clk_mhz,'ugly_[0-9]*'+$q+'[oO][0-7][_0-7]*')||regexp('ugly_'+$H/clk_mhz,'ugly_0x[0-9a-fA-F]+')||regexp('ugly_'+$H/clk_mhz,'ugly_-?[0-9]+')))'clk_mhz must be numeric constant, not '+$H/clk_mhz; }}";
+                  }
+               }
+               GROUP variable_port_widths
+               {
+                  # This group is for display only, to preview parameterized port widths
+                  title = "Parameterized Signal Widths";
+                  layout = "form";
+                  align = "left";
+                  EDIT sdram_ba_width
+                  {
+                     id = "sdram_ba_width";
+                     editable = "0";
+                     title = "sdram_ba[((bank_width - 1)) - (0) + 1]:";
+                     tooltip = "<b>sdram_ba[((bank_width - 1)) - (0) + 1]</b><br> direction: output<br> signal type: export";
+                     # This expression should emulate the HDL, and assign the port width
+                     dummy = "{{ $PORT_sdram_ba/width = (int((( ( $H/bank_width )  - 1)) - (0) + 1-1) - int(0) + 1); }}";
+                     DATA 
+                     {
+                        # The EDIT field is noneditable, so this just reads the current width.
+                        $PORT_sdram_ba/width = "$";
+                     }
+                     warning = "{{ if($PORT_sdram_ba/width <= 0)('width of sdram_ba must be greater than zero' ) }}";
+                  }
+                  EDIT sdram_addr_width
+                  {
+                     id = "sdram_addr_width";
+                     editable = "0";
+                     title = "sdram_addr[((row_width - 1)) - (0) + 1]:";
+                     tooltip = "<b>sdram_addr[((row_width - 1)) - (0) + 1]</b><br> direction: output<br> signal type: export";
+                     # This expression should emulate the HDL, and assign the port width
+                     dummy = "{{ $PORT_sdram_addr/width = (int((( ( $H/row_width )  - 1)) - (0) + 1-1) - int(0) + 1); }}";
+                     DATA 
+                     {
+                        # The EDIT field is noneditable, so this just reads the current width.
+                        $PORT_sdram_addr/width = "$";
+                     }
+                     warning = "{{ if($PORT_sdram_addr/width <= 0)('width of sdram_addr must be greater than zero' ) }}";
+                  }
+                  EDIT sdram_dq_width
+                  {
+                     id = "sdram_dq_width";
+                     editable = "0";
+                     title = "sdram_dq[((data_width - 1)) - (0) + 1]:";
+                     tooltip = "<b>sdram_dq[((data_width - 1)) - (0) + 1]</b><br> direction: inout<br> signal type: export";
+                     # This expression should emulate the HDL, and assign the port width
+                     dummy = "{{ $PORT_sdram_dq/width = (int((( ( $H/data_width )  - 1)) - (0) + 1-1) - int(0) + 1); }}";
+                     DATA 
+                     {
+                        # The EDIT field is noneditable, so this just reads the current width.
+                        $PORT_sdram_dq/width = "$";
+                     }
+                     warning = "{{ if($PORT_sdram_dq/width <= 0)('width of sdram_dq must be greater than zero' ) }}";
+                  }
+                  EDIT sdram_dqm_width
+                  {
+                     id = "sdram_dqm_width";
+                     editable = "0";
+                     title = "sdram_dqm[(((data_width / 8) - 1)) - (0) + 1]:";
+                     tooltip = "<b>sdram_dqm[(((data_width / 8) - 1)) - (0) + 1]</b><br> direction: output<br> signal type: export";
+                     # This expression should emulate the HDL, and assign the port width
+                     dummy = "{{ $PORT_sdram_dqm/width = (int(((( ( $H/data_width )  / 8) - 1)) - (0) + 1-1) - int(0) + 1); }}";
+                     DATA 
+                     {
+                        # The EDIT field is noneditable, so this just reads the current width.
+                        $PORT_sdram_dqm/width = "$";
+                     }
+                     warning = "{{ if($PORT_sdram_dqm/width <= 0)('width of sdram_dqm must be greater than zero' ) }}";
+                  }
+                  EDIT avs_nios_address_width
+                  {
+                     id = "avs_nios_address_width";
+                     editable = "0";
+                     title = "avs_nios_address[((((bank_width + row_width) + column_width) - 1)) - (0) + 1]:";
+                     tooltip = "<b>avs_nios_address[((((bank_width + row_width) + column_width) - 1)) - (0) + 1]</b><br> direction: input<br> signal type: address";
+                     # This expression should emulate the HDL, and assign the port width
+                     dummy = "{{ $PORT_avs_nios_address/width = (int((((( ( $H/bank_width )  +  ( $H/row_width ) ) +  ( $H/column_width ) ) - 1)) - (0) + 1-1) - int(0) + 1); }}";
+                     dummy_dummy = "{{ $SBI_nios/Address_Width = $PORT_avs_nios_address/width; }}";
+                     DATA 
+                     {
+                        # The EDIT field is noneditable, so this just reads the current width.
+                        $PORT_avs_nios_address/width = "$";
+                     }
+                     warning = "{{ if($PORT_avs_nios_address/width <= 0)('width of avs_nios_address must be greater than zero' ) }}";
+                  }
+                  EDIT avs_nios_byteenable_width
+                  {
+                     id = "avs_nios_byteenable_width";
+                     editable = "0";
+                     title = "avs_nios_byteenable[(((data_width / 8) - 1)) - (0) + 1]:";
+                     tooltip = "<b>avs_nios_byteenable[(((data_width / 8) - 1)) - (0) + 1]</b><br> direction: input<br> signal type: byteenable";
+                     # This expression should emulate the HDL, and assign the port width
+                     dummy = "{{ $PORT_avs_nios_byteenable/width = (int(((( ( $H/data_width )  / 8) - 1)) - (0) + 1-1) - int(0) + 1); }}";
+                     DATA 
+                     {
+                        # The EDIT field is noneditable, so this just reads the current width.
+                        $PORT_avs_nios_byteenable/width = "$";
+                     }
+                     warning = "{{ if($PORT_avs_nios_byteenable/width <= 0)('width of avs_nios_byteenable must be greater than zero' ) }}";
+                  }
+                  EDIT avs_nios_writedata_width
+                  {
+                     id = "avs_nios_writedata_width";
+                     editable = "0";
+                     title = "avs_nios_writedata[((data_width - 1)) - (0) + 1]:";
+                     tooltip = "<b>avs_nios_writedata[((data_width - 1)) - (0) + 1]</b><br> direction: input<br> signal type: writedata";
+                     # This expression should emulate the HDL, and assign the port width
+                     dummy = "{{ $PORT_avs_nios_writedata/width = (int((( ( $H/data_width )  - 1)) - (0) + 1-1) - int(0) + 1); }}";
+                     dummy_dummy = "{{ $SBI_nios/Data_Width = 2 ^ int(log2($PORT_avs_nios_writedata/width - 1) + 1); }}";
+                     DATA 
+                     {
+                        # The EDIT field is noneditable, so this just reads the current width.
+                        $PORT_avs_nios_writedata/width = "$";
+                     }
+                     warning = "{{ if($PORT_avs_nios_writedata/width <= 0)('width of avs_nios_writedata must be greater than zero' ) }}";
+                  }
+                  EDIT avs_nios_readdata_width
+                  {
+                     id = "avs_nios_readdata_width";
+                     editable = "0";
+                     title = "avs_nios_readdata[((data_width - 1)) - (0) + 1]:";
+                     tooltip = "<b>avs_nios_readdata[((data_width - 1)) - (0) + 1]</b><br> direction: output<br> signal type: readdata";
+                     # This expression should emulate the HDL, and assign the port width
+                     dummy = "{{ $PORT_avs_nios_readdata/width = (int((( ( $H/data_width )  - 1)) - (0) + 1-1) - int(0) + 1); }}";
+                     dummy_dummy = "{{ $SBI_nios/Data_Width = 2 ^ int(log2($PORT_avs_nios_readdata/width - 1) + 1); }}";
+                     DATA 
+                     {
+                        # The EDIT field is noneditable, so this just reads the current width.
+                        $PORT_avs_nios_readdata/width = "$";
+                     }
+                     warning = "{{ if($PORT_avs_nios_readdata/width <= 0)('width of avs_nios_readdata must be greater than zero' ) }}";
+                  }
+               }
+            }
+         }
+      }
+   }
+   SOPC_Builder_Version = "5.10";
+   COMPONENT_BUILDER 
+   {
+      HDL_PARAMETERS 
+      {
+         # generated by CBDocument.getParameterContainer
+         # used only by Component Editor
+         HDL_PARAMETER data_width
+         {
+            parameter_name = "data_width";
+            type = "integer";
+            default_value = "32";
+            editable = "1";
+            tooltip = "";
+         }
+         HDL_PARAMETER bank_width
+         {
+            parameter_name = "bank_width";
+            type = "integer";
+            default_value = "4";
+            editable = "1";
+            tooltip = "";
+         }
+         HDL_PARAMETER row_width
+         {
+            parameter_name = "row_width";
+            type = "integer";
+            default_value = "12";
+            editable = "1";
+            tooltip = "";
+         }
+         HDL_PARAMETER column_width
+         {
+            parameter_name = "column_width";
+            type = "integer";
+            default_value = "8";
+            editable = "1";
+            tooltip = "";
+         }
+         HDL_PARAMETER clk_mhz
+         {
+            parameter_name = "clk_mhz";
+            type = "integer";
+            default_value = "120";
+            editable = "1";
+            tooltip = "";
+         }
+      }
+      SW_FILES 
+      {
+      }
+      built_on = "2006.09.25.10:24:12";
+      CACHED_HDL_INFO 
+      {
+         # cached hdl info, emitted by CBFrameRealtime.getDocumentCachedHDLInfoSection
+         # used only by Component Builder
+         FILE sdram_ctrl.vhd
+         {
+            file_mod = "Mon Sep 18 18:08:50 EEST 2006";
+            quartus_map_start = "Mon Sep 25 10:22:36 EEST 2006";
+            quartus_map_finished = "Mon Sep 25 10:22:58 EEST 2006";
+            #found 1 valid modules
+            WRAPPER sdram_ctrl
+            {
+               CLASS sdram_ctrl
+               {
+                  CB_GENERATOR 
+                  {
+                     HDL_FILES 
+                     {
+                        FILE 
+                        {
+                           use_in_simulation = "1";
+                           use_in_synthesis = "1";
+                           filepath = "H:/Work/Home_stuff/opencores/sdram_ctrl/src/sdram_ctrl.vhd";
+                        }
+                     }
+                     top_module_name = "sdram_ctrl";
+                     emit_system_h = "0";
+                     LIBRARIES 
+                     {
+                        library = "ieee.std_logic_1164.all";
+                        library = "ieee.numeric_std.all";
+                        library = "altera_mf.altera_mf_components.all";
+                        library = "std.standard.all";
+                     }
+                  }
+                  MODULE_DEFAULTS global_signals
+                  {
+                     class = "sdram_ctrl";
+                     class_version = "1.0";
+                     SYSTEM_BUILDER_INFO 
+                     {
+                        Instantiate_In_System_Module = "1";
+                     }
+                     SLAVE nios
+                     {
+                        SYSTEM_BUILDER_INFO 
+                        {
+                           Bus_Type = "avalon";
+                        }
+                        PORT_WIRING 
+                        {
+                           PORT avs_nios_chipselect
+                           {
+                              width = "1";
+                              width_expression = "";
+                              direction = "input";
+                              type = "chipselect";
+                              is_shared = "0";
+                              vhdl_record_name = "";
+                              vhdl_record_type = "";
+                           }
+                           PORT avs_nios_address
+                           {
+                              width = "-1";
+                              width_expression = "((((bank_width + row_width) + column_width) - 1)) - (0) + 1";
+                              direction = "input";
+                              type = "address";
+                              is_shared = "0";
+                              vhdl_record_name = "";
+                              vhdl_record_type = "";
+                           }
+                           PORT avs_nios_byteenable
+                           {
+                              width = "-1";
+                              width_expression = "(((data_width / 8) - 1)) - (0) + 1";
+                              direction = "input";
+                              type = "byteenable";
+                              is_shared = "0";
+                              vhdl_record_name = "";
+                              vhdl_record_type = "";
+                           }
+                           PORT avs_nios_writedata
+                           {
+                              width = "-1";
+                              width_expression = "((data_width - 1)) - (0) + 1";
+                              direction = "input";
+                              type = "writedata";
+                              is_shared = "0";
+                              vhdl_record_name = "";
+                              vhdl_record_type = "";
+                           }
+                           PORT avs_nios_write
+                           {
+                              width = "1";
+                              width_expression = "";
+                              direction = "input";
+                              type = "write";
+                              is_shared = "0";
+                              vhdl_record_name = "";
+                              vhdl_record_type = "";
+                           }
+                           PORT avs_nios_read
+                           {
+                              width = "1";
+                              width_expression = "";
+                              direction = "input";
+                              type = "read";
+                              is_shared = "0";
+                              vhdl_record_name = "";
+                              vhdl_record_type = "";
+                           }
+                           PORT avs_nios_waitrequest
+                           {
+                              width = "1";
+                              width_expression = "";
+                              direction = "output";
+                              type = "waitrequest";
+                              is_shared = "0";
+                              vhdl_record_name = "";
+                              vhdl_record_type = "";
+                           }
+                           PORT avs_nios_readdata
+                           {
+                              width = "-1";
+                              width_expression = "((data_width - 1)) - (0) + 1";
+                              direction = "output";
+                              type = "readdata";
+                              is_shared = "0";
+                              vhdl_record_name = "";
+                              vhdl_record_type = "";
+                           }
+                           PORT avs_nios_readdatavalid
+                           {
+                              width = "1";
+                              width_expression = "";
+                              direction = "output";
+                              type = "readdatavalid";
+                              is_shared = "0";
+                              vhdl_record_name = "";
+                              vhdl_record_type = "";
+                           }
+                        }
+                     }
+                     SLAVE avalon_slave_0
+                     {
+                        SYSTEM_BUILDER_INFO 
+                        {
+                           Bus_Type = "avalon";
+                        }
+                        PORT_WIRING 
+                        {
+                           PORT sdram_cke
+                           {
+                              width = "1";
+                              width_expression = "";
+                              direction = "output";
+                              type = "export";
+                              is_shared = "0";
+                              vhdl_record_name = "";
+                              vhdl_record_type = "";
+                           }
+                           PORT sdram_ba
+                           {
+                              width = "-1";
+                              width_expression = "((bank_width - 1)) - (0) + 1";
+                              direction = "output";
+                              type = "export";
+                              is_shared = "0";
+                              vhdl_record_name = "";
+                              vhdl_record_type = "";
+                           }
+                           PORT sdram_addr
+                           {
+                              width = "-1";
+                              width_expression = "((row_width - 1)) - (0) + 1";
+                              direction = "output";
+                              type = "export";
+                              is_shared = "0";
+                              vhdl_record_name = "";
+                              vhdl_record_type = "";
+                           }
+                           PORT sdram_cs_n
+                           {
+                              width = "1";
+                              width_expression = "";
+                              direction = "output";
+                              type = "export";
+                              is_shared = "0";
+                              vhdl_record_name = "";
+                              vhdl_record_type = "";
+                           }
+                           PORT sdram_ras_n
+                           {
+                              width = "1";
+                              width_expression = "";
+                              direction = "output";
+                              type = "export";
+                              is_shared = "0";
+                              vhdl_record_name = "";
+                              vhdl_record_type = "";
+                           }
+                           PORT sdram_cas_n
+                           {
+                              width = "1";
+                              width_expression = "";
+                              direction = "output";
+                              type = "export";
+                              is_shared = "0";
+                              vhdl_record_name = "";
+                              vhdl_record_type = "";
+                           }
+                           PORT sdram_we_n
+                           {
+                              width = "1";
+                              width_expression = "";
+                              direction = "output";
+                              type = "export";
+                              is_shared = "0";
+                              vhdl_record_name = "";
+                              vhdl_record_type = "";
+                           }
+                           PORT sdram_dq
+                           {
+                              width = "-1";
+                              width_expression = "((data_width - 1)) - (0) + 1";
+                              direction = "inout";
+                              type = "export";
+                              is_shared = "0";
+                              vhdl_record_name = "";
+                              vhdl_record_type = "";
+                           }
+                           PORT sdram_dqm
+                           {
+                              width = "-1";
+                              width_expression = "(((data_width / 8) - 1)) - (0) + 1";
+                              direction = "output";
+                              type = "export";
+                              is_shared = "0";
+                              vhdl_record_name = "";
+                              vhdl_record_type = "";
+                           }
+                        }
+                     }
+                     PORT_WIRING 
+                     {
+                        PORT clk
+                        {
+                           width = "1";
+                           width_expression = "";
+                           direction = "input";
+                           type = "clk";
+                           is_shared = "0";
+                           vhdl_record_name = "";
+                           vhdl_record_type = "";
+                        }
+                        PORT reset
+                        {
+                           width = "1";
+                           width_expression = "";
+                           direction = "input";
+                           type = "reset";
+                           is_shared = "0";
+                           vhdl_record_name = "";
+                           vhdl_record_type = "";
+                        }
+                     }
+                  }
+                  USER_INTERFACE 
+                  {
+                     USER_LABELS 
+                     {
+                        name = "sdram_ctrl";
+                        technology = "imported components";
+                     }
+                  }
+                  SOPC_Builder_Version = "0.0";
+                  COMPONENT_BUILDER 
+                  {
+                     HDL_PARAMETERS 
+                     {
+                        # generated by CBDocument.getParameterContainer
+                        # used only by Component Editor
+                        HDL_PARAMETER data_width
+                        {
+                           parameter_name = "data_width";
+                           type = "integer";
+                           default_value = "32";
+                           editable = "1";
+                           tooltip = "";
+                        }
+                        HDL_PARAMETER bank_width
+                        {
+                           parameter_name = "bank_width";
+                           type = "integer";
+                           default_value = "4";
+                           editable = "1";
+                           tooltip = "";
+                        }
+                        HDL_PARAMETER row_width
+                        {
+                           parameter_name = "row_width";
+                           type = "integer";
+                           default_value = "12";
+                           editable = "1";
+                           tooltip = "";
+                        }
+                        HDL_PARAMETER column_width
+                        {
+                           parameter_name = "column_width";
+                           type = "integer";
+                           default_value = "8";
+                           editable = "1";
+                           tooltip = "";
+                        }
+                        HDL_PARAMETER clk_mhz
+                        {
+                           parameter_name = "clk_mhz";
+                           type = "integer";
+                           default_value = "120";
+                           editable = "1";
+                           tooltip = "";
+                        }
+                     }
+                  }
+               }
+            }
+         }
+      }
+   }
+   ASSOCIATED_FILES 
+   {
+      Add_Program = "the_wizard_ui";
+      Edit_Program = "the_wizard_ui";
+      Generator_Program = "cb_generator.pl";
+   }
+}
