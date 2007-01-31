@@ -33,7 +33,7 @@ architecture structure of sdram_ctrl_tb is
 			signal sdram_ba : OUT STD_LOGIC_VECTOR (1 DOWNTO 0);
 			signal sdram_cas_n : OUT STD_LOGIC;
 			signal sdram_cke : OUT STD_LOGIC;
-			signal sdram_cs_n : OUT STD_LOGIC;
+			signal sdram_cs_n : OUT STD_LOGIC_VECTOR(0 downto 0);
 			signal sdram_dq : INOUT STD_LOGIC_VECTOR (31 DOWNTO 0);
 			signal sdram_dqm : OUT STD_LOGIC_VECTOR (3 DOWNTO 0);
 			signal sdram_ras_n : OUT STD_LOGIC;
@@ -75,7 +75,7 @@ architecture structure of sdram_ctrl_tb is
 	
 	signal SDRAM_CLK :  std_logic;
 	signal SDRAM_CKE :  std_logic;
-	signal SDRAM_NCS :  std_logic;
+	signal SDRAM_NCS :  std_logic_vector(0 downto 0);
 	signal SDRAM_NRAS :  std_logic;
 	signal SDRAM_NCAS :  std_logic;
 	signal SDRAM_NWE :  std_logic;
@@ -132,7 +132,7 @@ begin
 		Ba  => SDRAM_BANK,
 		Clk  => SDRAM_CLK,
 		Cke => SDRAM_CKE,
-		Cs_n => SDRAM_NCS,
+		Cs_n => SDRAM_NCS(0),
 		Ras_n => SDRAM_NRAS,
 		Cas_n  => SDRAM_NCAS,
 		We_n => SDRAM_NWE,

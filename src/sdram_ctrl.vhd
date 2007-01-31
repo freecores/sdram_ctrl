@@ -7,8 +7,8 @@
 -- 
 --                                                              
 -- To Do:        
--- multichipselect support
--- configurable times 
+-- multichipselect support	done
+-- configurable times		50% 
 -- nios simulation support
 --                                                              
 -- Author(s):                                                   
@@ -33,27 +33,42 @@
 -- Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA            
 --                                                              
 ------------------------------------------------------------------
--- Test results																					
--- FPGA                     SDRAM			         CLK (not less than)
+-- Hardware test results																					
+-- FPGA                     SDRAM			 CLK (not less than)
 -- EP1C12XXXXC8             MT48LC4M32B2TG-7:G		 125 MHz
 -- EP1C6XXXXC8              IS42S16100C1-7TL		 125 MHz   
 --
 ------------------------------------------------------------------
+-- History
+-- 22.10.2006	multichipselect functionaly tested	  
+-- 10.11.2006	first successful hardware test
+-- 07.12.2006	proved to be fully reliable
 
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
+
 LIBRARY altera_mf;
-USE altera_mf.altera_mf_components.all;
+USE altera_mf.altera_mf_components.all;	 
 
 entity sdram_ctrl is 
-	generic(  
+	generic( 
 		DATA_WIDTH: integer:=32;
-		BANK_WIDTH: integer:=4;
+		CHIPSELECTS: integer:=1; 
+		LOG2_OF_CS: integer:=0;
+		BANK_WIDTH: integer:=2;
 		ROW_WIDTH: integer:=12;
-		COLUMN_WIDTH: integer:=8; 
+		COLUMN_WIDTH: integer:=8;
 		
-		clk_MHz: integer:=120
+		MODE_REGISTER: integer:=48;	-- 1 word burst, CAS latency=3 
+		
+		-- Only two times are configurable
+		-- tINIT delay between powerup and load mode register = 100 us 
+		-- tREF refresh period = 15.625 us  (64ms/4096rows)
+		clk_MHz: integer:=120;
+		t_INIT_uS: integer:=110;	-- 109.9 us just to be on the save side
+		t_REF_nS: integer:=15384	-- 15.384 us the same purpose
+		
 		);
 	port(		
 		signal clk : IN STD_LOGIC;
@@ -63,7 +78,7 @@ entity sdram_ctrl is
 		-- 'Minimum Arbitration Shares'=1 
 		-- 'Max Pending Read Transactions'=9
 		signal avs_nios_chipselect : IN STD_LOGIC;
-		signal avs_nios_address : IN STD_LOGIC_VECTOR ((BANK_WIDTH+ROW_WIDTH+COLUMN_WIDTH-1) DOWNTO 0);
+		signal avs_nios_address : IN STD_LOGIC_VECTOR ((LOG2_OF_CS+BANK_WIDTH+ROW_WIDTH+COLUMN_WIDTH-1) DOWNTO 0);
 		signal avs_nios_byteenable : IN STD_LOGIC_VECTOR (((DATA_WIDTH/8)-1) DOWNTO 0);
 		signal avs_nios_writedata : IN STD_LOGIC_VECTOR ((DATA_WIDTH-1) DOWNTO 0);
 		signal avs_nios_write : IN STD_LOGIC;
@@ -73,10 +88,10 @@ entity sdram_ctrl is
 		signal avs_nios_readdatavalid : OUT STD_LOGIC;	
 		
 		-- global export signals
-		signal sdram_cke : OUT STD_LOGIC;                       -- This pin has fixed state '1'
+		signal sdram_cke : OUT STD_LOGIC;                       -- This pin has the fixed state '1'
 		signal sdram_ba : OUT STD_LOGIC_VECTOR ((BANK_WIDTH-1) DOWNTO 0);
 		signal sdram_addr : OUT STD_LOGIC_VECTOR ((ROW_WIDTH-1) DOWNTO 0);
-		signal sdram_cs_n : OUT STD_LOGIC;                      -- This pin has fixed state '0'
+		signal sdram_cs_n : OUT STD_LOGIC_VECTOR ((CHIPSELECTS-1) DOWNTO 0);
 		signal sdram_ras_n : OUT STD_LOGIC;
 		signal sdram_cas_n : OUT STD_LOGIC;	 
 		signal sdram_we_n : OUT STD_LOGIC;
@@ -87,15 +102,18 @@ end sdram_ctrl;
 
 architecture behaviour of sdram_ctrl is
 	
-	CONSTANT FIFO_WIDTH: integer:=BANK_WIDTH+ROW_WIDTH+COLUMN_WIDTH+DATA_WIDTH+(DATA_WIDTH/8)+2;     
+	CONSTANT FIFO_WIDTH: integer:=LOG2_OF_CS+BANK_WIDTH+ROW_WIDTH+COLUMN_WIDTH+DATA_WIDTH+(DATA_WIDTH/8)+2;     
+	CONSTANT BE_LOW_BIT: integer:=2;
+	CONSTANT DATA_LOW_BIT: integer:=(DATA_WIDTH/8)+2;     
+	CONSTANT COL_LOW_BIT: integer:=DATA_WIDTH+(DATA_WIDTH/8)+2;     
+	CONSTANT ROW_LOW_BIT: integer:=COLUMN_WIDTH+DATA_WIDTH+(DATA_WIDTH/8)+2;     
+	CONSTANT BANK_LOW_BIT: integer:=ROW_WIDTH+COLUMN_WIDTH+DATA_WIDTH+(DATA_WIDTH/8)+2;     
+	CONSTANT CS_LOW_BIT: integer:=BANK_WIDTH+ROW_WIDTH+COLUMN_WIDTH+DATA_WIDTH+(DATA_WIDTH/8)+2;     
 	
-	CONSTANT MODE: std_logic_vector(11 downto 0):="000000110000";	-- 1 word burst, CAS latency=3
-	-- Only two times are configurable
-	-- tINIT delay between powerup and load mode register = 100 us 
-	-- tREF refresh period = 15.625 us  (64ms/4096rows)
-	CONSTANT INIT_PAUSE_CLOCKS: integer:=(clk_MHz*10000)/91;	-- 109.9 us just to be on the save side
-	CONSTANT REFRESH_PERIOD_CLOCKS: integer:=(clk_MHz*1000)/65;	-- 15.384 us the same purpose
-	CONSTANT CAS_LATENCY: integer:=3;                               -- other latencies weren't been tested!
+	--CONSTANT MODE: std_logic_vector((sdram_addr'length-1) downto 0):=std_logic_vector(MODE_REGISTER((sdram_addr'length-1) downto 0));
+	CONSTANT INIT_PAUSE_CLOCKS: integer:=clk_MHz*t_INIT_uS;	
+	CONSTANT REFRESH_PERIOD_CLOCKS: integer:=(clk_MHz*t_REF_nS)/1000;
+	CONSTANT CAS_LATENCY: integer:=3;                           -- other latencies weren't been tested!
 	
 	COMPONENT scfifo
 		GENERIC (
@@ -146,13 +164,14 @@ architecture behaviour of sdram_ctrl is
 	signal init_counter: unsigned(15 downto 0):=to_unsigned(INIT_PAUSE_CLOCKS,16); 
 	signal refresh_counter: unsigned(15 downto 0);
 	signal active_counter: unsigned(2 downto 0);  	 	 
-	signal active_address: unsigned((BANK_WIDTH+ROW_WIDTH-1) downto 0);
+	signal active_address: unsigned((LOG2_OF_CS+BANK_WIDTH+ROW_WIDTH-1) downto 0);
 	
+	signal chipselect: std_logic_vector(LOG2_OF_CS downto 0);  
 	signal bank: std_logic_vector((sdram_ba'length-1) downto 0); 
 	signal row: std_logic_vector((sdram_addr'length-1) downto 0);
-	signal column: std_logic_vector((COLUMN_WIDTH-1) downto 0);
-	signal be: std_logic_vector((sdram_dqm'length-1) downto 0);  
-	signal data: std_logic_vector((sdram_dq'length-1) downto 0);
+	signal column: std_logic_vector((COLUMN_WIDTH-1) downto 0); 
+	signal data: std_logic_vector((sdram_dq'length-1) downto 0);	 
+	signal be: std_logic_vector((sdram_dqm'length-1) downto 0); 
 	
 	signal do_init,do_refresh,do_active,read_is_active,ready,tRCD_not_expired: std_logic:='0';
 	
@@ -163,28 +182,40 @@ architecture behaviour of sdram_ctrl is
 	signal fifo_data: std_logic_vector((FIFO_WIDTH-1) downto 0);	
 	signal fifo_wrreq,fifo_wrfull: std_logic;	
 	
-	signal i_command : STD_LOGIC_VECTOR(4 downto 0); 
-	CONSTANT NOP: STD_LOGIC_VECTOR(4 downto 0):="10111";
-	CONSTANT ACTIVE: STD_LOGIC_VECTOR(4 downto 0):="10011";
-	CONSTANT READ: STD_LOGIC_VECTOR(4 downto 0):="10101";
-	CONSTANT WRITE: STD_LOGIC_VECTOR(4 downto 0):="10100";
-	CONSTANT PRECHARGE: STD_LOGIC_VECTOR(4 downto 0):="10010";
-	CONSTANT AUTO_REFRESH: STD_LOGIC_VECTOR(4 downto 0):="10001";
-	CONSTANT LOAD_MODE_REGISTER: STD_LOGIC_VECTOR(4 downto 0):="10000";
+	signal i_command : STD_LOGIC_VECTOR(2 downto 0); 
+	CONSTANT NOP: STD_LOGIC_VECTOR((i_command'length-1) downto 0):="111";
+	CONSTANT ACTIVE: STD_LOGIC_VECTOR((i_command'length-1) downto 0):="011";
+	CONSTANT READ: STD_LOGIC_VECTOR((i_command'length-1) downto 0):="101";
+	CONSTANT WRITE: STD_LOGIC_VECTOR((i_command'length-1) downto 0):="100";
+	CONSTANT PRECHARGE: STD_LOGIC_VECTOR((i_command'length-1) downto 0):="010";
+	CONSTANT AUTO_REFRESH: STD_LOGIC_VECTOR((i_command'length-1) downto 0):="001";
+	CONSTANT LOAD_MODE_REGISTER: STD_LOGIC_VECTOR((i_command'length-1) downto 0):="000";
 	
-	signal i_address : STD_LOGIC_VECTOR((sdram_addr'length-1) DOWNTO 0);
+	signal i_address : STD_LOGIC_VECTOR((sdram_addr'length-1) DOWNTO 0);  
+	signal i_chipselect: STD_LOGIC_VECTOR((sdram_cs_n'length-1) downto 0);
 	signal i_bank : STD_LOGIC_VECTOR((sdram_ba'length-1) DOWNTO 0);
 	signal i_dqm : STD_LOGIC_VECTOR((sdram_dqm'length-1) DOWNTO 0);
 	signal i_data : STD_LOGIC_VECTOR((sdram_dq'length-1) DOWNTO 0);
 	attribute ALTERA_ATTRIBUTE : string;
 	attribute ALTERA_ATTRIBUTE of i_command : signal is "FAST_OUTPUT_REGISTER=ON";
 	attribute ALTERA_ATTRIBUTE of i_address : signal is "FAST_OUTPUT_REGISTER=ON";
+	attribute ALTERA_ATTRIBUTE of i_chipselect : signal is "FAST_OUTPUT_REGISTER=ON";
 	attribute ALTERA_ATTRIBUTE of i_bank : signal is "FAST_OUTPUT_REGISTER=ON";
 	attribute ALTERA_ATTRIBUTE of i_dqm : signal is "FAST_OUTPUT_REGISTER=ON";
 	attribute ALTERA_ATTRIBUTE of i_data : signal is "FAST_OUTPUT_REGISTER=ON";	 
-	attribute ALTERA_ATTRIBUTE of avs_nios_readdata : signal is "FAST_INPUT_REGISTER=ON";
+	attribute ALTERA_ATTRIBUTE of avs_nios_readdata : signal is "FAST_INPUT_REGISTER=ON"; 
+	
+	function DECODE(hex: std_logic_vector; size: integer) return std_logic_vector is
+		variable result : std_logic_vector((size-1) downto 0);	
+	begin
+		result:=(others=>'1');
+		result(to_integer(unsigned(hex))):='0';
+		return result;
+	end;	
 begin
-	(sdram_cke,sdram_cs_n,sdram_ras_n,sdram_cas_n,sdram_we_n) <= i_command;
+	sdram_cke<='1';
+	(sdram_ras_n,sdram_cas_n,sdram_we_n) <= i_command;
+	sdram_cs_n <= i_chipselect;
 	sdram_addr <= i_address;
 	sdram_ba <= i_bank;
 	sdram_dqm <= i_dqm;
@@ -197,7 +228,7 @@ begin
 	
 	fifo_rdreq<=not fifo_empty and not do_refresh and not do_active and not read_is_active and ready;
 	
-	do_active<='0' when active_address=unsigned((fifo_q((fifo_q'length-1) downto (fifo_q'length-bank'length-row'length)))) else '1';	
+	do_active<='0' when active_address=unsigned(fifo_q((fifo_q'length-1) downto (column'length+data'length+be'length+2))) else '1';	
 	read_is_active<='1' when read_latency(CAS_LATENCY-1 downto 0)>"000" and fifo_q(1)='1' else '0';
 	ready<='1' when operation=IDLE or operation=READ0 or operation=WRITE0 else '0';
 	
@@ -209,12 +240,19 @@ begin
 			active_address<=(others=>'1');
 		elsif rising_edge(clk)
 			then   
+			if CHIPSELECTS>1 
+				then
+				chipselect<='0'&fifo_q((FIFO_WIDTH-1) downto CS_LOW_BIT);
+				bank<=fifo_q((CS_LOW_BIT-1) downto BANK_LOW_BIT);
+			else 
+				chipselect<=(others=>'0');
+				bank<=fifo_q((FIFO_WIDTH-1) downto BANK_LOW_BIT);
+			end if;
 			
-			bank<=fifo_q((fifo_q'length-1) downto (fifo_q'length-bank'length));
-			row<=fifo_q((fifo_q'length-bank'length-1) downto (fifo_q'length-bank'length-row'length));
-			column<=fifo_q((column'length+data'length+be'length+2-1) downto (data'length+be'length+2));
-			data<=fifo_q((data'length+be'length+2-1) downto (be'length+2));
-			be<=fifo_q((be'length+2-1) downto 2);
+			row<=   fifo_q((BANK_LOW_BIT-1) downto ROW_LOW_BIT);
+			column<=fifo_q((ROW_LOW_BIT-1)  downto COL_LOW_BIT);
+			data<=  fifo_q((COL_LOW_BIT-1)  downto DATA_LOW_BIT);
+			be<=    fifo_q((DATA_LOW_BIT-1) downto BE_LOW_BIT);
 			
 			case operation is 
 				when INIT0=> 
@@ -243,7 +281,7 @@ begin
 				when INIT20=>operation<=INIT21;
 				when INIT21=>operation<=INIT22;
 				when INIT22=>operation<=INIT23;
-				when INIT23=>operation<=INIT24;row<=MODE((row'length-1) downto 0);
+				when INIT23=>operation<=INIT24;row<=std_logic_vector(to_unsigned(MODE_REGISTER,row'length));
 				when INIT24=>operation<=IDLE;	
 				
 				when REFRESH0=>operation<=REFRESH1;		 
@@ -259,14 +297,14 @@ begin
 				when REFRESH10=>operation<=REFRESH11;
 				when REFRESH11=>operation<=REFRESH12;
 				when REFRESH12=>operation<=REFRESH13;
-				active_address<=unsigned(fifo_q((fifo_q'length-1) downto (fifo_q'length-bank'length-row'length)));
+				active_address<=unsigned(fifo_q((fifo_q'length-1) downto ROW_LOW_BIT));
 				when REFRESH13=>operation<=REFRESH14;	
 				when REFRESH14=>operation<=IDLE;          	
 				
 				when ACTIVE0=>operation<=ACTIVE1;	 
 				when ACTIVE1=>operation<=ACTIVE2;	  
 				when ACTIVE2=>operation<=ACTIVE3;	
-				active_address<=unsigned(fifo_q((fifo_q'length-1) downto (fifo_q'length-bank'length-row'length)));
+				active_address<=unsigned(fifo_q((fifo_q'length-1) downto ROW_LOW_BIT));
 				when ACTIVE3=>operation<=ACTIVE4;
 				when ACTIVE4=>operation<=IDLE;    	   
 				
@@ -382,10 +420,12 @@ begin
 			i_address<=(others=>'0');
 			i_bank<=(others=>'0');
 			i_dqm<=(others=>'0');
-			i_data<=(others=>'Z');
+			i_data<=(others=>'Z'); 
+			i_chipselect<=(others=>'1');
 		elsif rising_edge(clk)
 			then
-			i_command<=NOP;
+			i_command<=NOP;	
+			i_chipselect<=DECODE(chipselect,i_chipselect'length);
 			i_bank<=bank;
 			i_address<=(others=>'0');
 			i_address((column'length-1) downto 0)<=column;
@@ -395,15 +435,18 @@ begin
 			case operation is	
 				when INIT1|REFRESH0|ACTIVE0 =>  
 				i_command<=PRECHARGE;
-				i_address<=row;
+				i_address<=row;	
+				i_chipselect<=(others=>'0');
 				when INIT4|INIT14|REFRESH3 =>   
-				i_command<=AUTO_REFRESH;
+				i_command<=AUTO_REFRESH;	
+				i_chipselect<=(others=>'0');
 				when INIT24=> 
 				i_command<=LOAD_MODE_REGISTER;
-				i_address<=row;
+				i_address<=row;				
+				i_chipselect<=(others=>'0');
 				when ACTIVE3|REFRESH13 => 
 				i_command<=ACTIVE;
-				i_address<=row;
+				i_address<=row;				
 				when READ0 =>
 				i_command<=READ;
 				when WRITE0 => 	
@@ -418,7 +461,7 @@ begin
 	fifo: scfifo
 	GENERIC MAP (
 		add_ram_output_register => "ON",
-		intended_device_family => "Cyclone",
+		intended_device_family => "Auto",
 		lpm_numwords => 4,
 		lpm_showahead => "ON",
 		lpm_type => "scfifo",
